@@ -1,77 +1,102 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip>
+#include <limits>
 
 using namespace std;
 
-// Class Definition
+// Class to represent a Student
 class Student {
 private:
     string name;
     int rollNumber;
-    float grade;
+    char grade;
 
 public:
-    // Constructor
-    Student(string n, int r, float g) {
-        name = n;
-        rollNumber = r;
-        grade = g;
+    // Constructor to initialize student details
+    Student(string n, int r, char g) : name(n), rollNumber(r), grade(g) {}
+
+    // Function to display student details
+    void display() const {
+        cout << "---------------------------------" << endl;
+        cout << "Name: " << name << endl;
+        cout << "Roll Number: " << rollNumber << endl;
+        cout << "Grade: " << grade << endl;
+        cout << "---------------------------------" << endl;
     }
 
-    // Getter functions (Encapsulation)
-    int getRollNumber() const { return rollNumber; }
-    
-    void displayRecord() const {
-        cout << left << setw(20) << name 
-             << setw(15) << rollNumber 
-             << setw(10) << grade << endl;
+    // Getter for roll number (useful for searching, though not implemented in basic menu)
+    int getRollNumber() const {
+        return rollNumber;
     }
 };
 
-// Main System Logic
 int main() {
-    vector<Student> database;
+    vector<Student> students; // Vector to store student objects
     int choice;
 
-    do {
-        cout << "\n--- Student Database System ---\n";
-        cout << "1. Add Student\n";
-        cout << "2. View All Students\n";
+    cout << "=== Student Database System ===" << endl;
+
+    while (true) {
+        cout << "\nMenu:\n";
+        cout << "1. Add New Student\n";
+        cout << "2. Display All Students\n";
         cout << "3. Exit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
-
-        if (choice == 1) {
-            string name;
-            int roll;
-            float grade;
-            
-            cout << "Enter Name: ";
-            cin.ignore(); // Clear buffer
-            getline(cin, name);
-            cout << "Enter Roll Number: ";
-            cin >> roll;
-            cout << "Enter Grade: ";
-            cin >> grade;
-
-            // Create object and add to vector
-            Student newStudent(name, roll, grade);
-            database.push_back(newStudent);
-            cout << "Student added successfully!\n";
-
-        } else if (choice == 2) {
-            cout << "\n" << left << setw(20) << "Name" 
-                 << setw(15) << "Roll No" 
-                 << setw(10) << "Grade" << endl;
-            cout << "---------------------------------------------\n";
-            for (const auto& student : database) {
-                student.displayRecord();
-            }
+        cout << "Enter your choice: ";
+        
+        if (!(cin >> choice)) {
+            cout << "Invalid input. Please enter a number." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
         }
 
-    } while (choice != 3);
+        if (choice == 3) {
+            cout << "Exiting system..." << endl;
+            break;
+        }
+
+        switch (choice) {
+            case 1: {
+                string name;
+                int roll;
+                char grade;
+
+                cout << "Enter Name: ";
+                cin.ignore(); // Clear newline from buffer
+                getline(cin, name);
+
+                cout << "Enter Roll Number: ";
+                while (!(cin >> roll)) {
+                    cout << "Invalid roll number. Enter a number: ";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+
+                cout << "Enter Grade (A, B, C, etc.): ";
+                cin >> grade;
+
+                // Create object and add to vector
+                Student newStudent(name, roll, grade);
+                students.push_back(newStudent);
+                cout << "Student added successfully!" << endl;
+                break;
+            }
+            case 2: {
+                if (students.empty()) {
+                    cout << "No students found in the database." << endl;
+                } else {
+                    cout << "\n--- Student Records ---" << endl;
+                    for (const auto& student : students) {
+                        student.display();
+                    }
+                }
+                break;
+            }
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
 
     return 0;
 }
